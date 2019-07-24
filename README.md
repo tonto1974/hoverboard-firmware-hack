@@ -85,7 +85,8 @@ Most robust way for input is to use the ADC and potis. It works well even on 1m 
 Have a look at the config.h in the Inc directory. That's where you configure to firmware to match your project.
 Currently supported: Wii Nunchuck, analog potentiometer and PPM-Sum signal from a RC remote.
 A good example of control via UART, eg. from an Arduino or raspberryPi, can be found here:
-https://github.com/p-h-a-i-l/hoverboard-firmware-hack
+  https://github.com/p-h-a-i-l/hoverboard-firmware-hack
+  ArduinoExamples folder for new UART communication
 
 If you need additional features like a boost button, have a look at the while(1) loop in the main.c
 
