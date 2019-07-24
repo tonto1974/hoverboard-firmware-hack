@@ -54,28 +54,11 @@
 // ############################### INPUT ###############################
 
 // ###### CONTROL VIA UART (serial) ######
+// ###### NOTE: For Arduino side check code in the ArduinoExamples folder ######
 #define CONTROL_SERIAL_USART2     // left sensor board cable, disable if ADC or PPM is used!
 #define CONTROL_BAUD   115200     // control via usart from eg an Arduino or raspberry
 #define COMMAND_START 12838       // arbritrary value signals that next 2 values will be steer and speed 011001000100110
 #define COMMAND_END 3416          // arbritrary value signals that data ended                            000110101011000
-
-/*
-// For Arduino, use code below. Don't forget to set baud rate to CONTROL_BAUD
-// Also copy and paste uint16_t COMMAND_START and COMMAND_END
-uint16_t COMMAND_START  57351
-uint16_t COMMAND_END    8184
-void setup(){Serial.begin(CONTROL_BAUD);}
-void loop() { uint16_t steer = 100; uint16_t speed = 200; sendCommand(steer, speed); }
-void sendCommand(uint16_t _steer, uint16_t _speed){
-    static uint16_t cmd_start = COMMAND_START; static uint16_t cmd_rnd = 0;
-    cmd_rnd = 1000 + (cmd_rnd % 200); // Generate different value
-    ++cmd_rnd;
-    for (int i = 0; i < 2; ++i){
-        Serial.write((uint8_t *) &cmd_start, sizeof(cmd_start));
-        Serial.write((uint8_t *) &_steer, sizeof(_steer));
-        Serial.write((uint8_t *) &_speed, sizeof(_speed));
-        Serial.write((uint8_t *) &cmd_rnd, sizeof(cmd_rnd));}}
-*/
 
 // ###### CONTROL VIA RC REMOTE ######
 // left sensor board cable. Channel 1: steering, Channel 2: speed. Use a very short cable!
