@@ -15,8 +15,8 @@
 // How to calibrate: connect GND and RX of a 3.3v uart-usb adapter to the right sensor board cable (be careful not to use the red wire of the cable. 15v will destroy everything.). if you are using nunchuck, disable it temporarily. enable DEBUG_SERIAL_USART3 and DEBUG_SERIAL_ASCII use asearial terminal.
 
 // Battery voltage calibration: connect power source. see <How to calibrate>. write value nr 5 to BAT_CALIB_ADC. make and flash firmware. then you can verify voltage on value 6 (devide it by 100.0 to get calibrated voltage).
-#define BAT_CALIB_REAL_VOLTAGE        43.0       // input voltage measured by multimeter  
-#define BAT_CALIB_ADC                 1704       // adc-value measured by mainboard (value nr 5 on UART debug output)
+#define BAT_CALIB_REAL_VOLTAGE        41.9       // input voltage measured by multimeter  
+#define BAT_CALIB_ADC                 1570       // adc-value measured by mainboard (value nr 5 on UART debug output)
 
 #define BAT_NUMBER_OF_CELLS     10        // normal Hoverboard battery: 10s
 #define BAT_LOW_LVL1_ENABLE     0         // to beep or not to beep, 1 or 0
@@ -46,6 +46,7 @@
 // ############################### SERIAL DEBUG ###############################
 
 #define DEBUG_SERIAL_USART3         // right sensor board cable, disable if I2C (nunchuck or lcd) is used!
+// #define DEBUG_SERIAL_USART2
 #define DEBUG_BAUD       115200     // UART baud rate
 //#define DEBUG_SERIAL_SERVOTERM      // Software for plotting graphs: https://github.com/STMBL/Servoterm-app
 #define DEBUG_SERIAL_ASCII          // "1:345 2:1337 3:0 4:0 5:0 6:0 7:0 8:0\r\n"
@@ -53,9 +54,28 @@
 // ############################### INPUT ###############################
 
 // ###### CONTROL VIA UART (serial) ######
-//#define CONTROL_SERIAL_USART2       // left sensor board cable, disable if ADC or PPM is used!
-#define CONTROL_BAUD       19200    // control via usart from eg an Arduino or raspberry
-// for Arduino, use void loop(void){ Serial.write((uint8_t *) &steer, sizeof(steer)); Serial.write((uint8_t *) &speed, sizeof(speed));delay(20); }
+#define CONTROL_SERIAL_USART2     // left sensor board cable, disable if ADC or PPM is used!
+#define CONTROL_BAUD   115200     // control via usart from eg an Arduino or raspberry
+#define COMMAND_START 12838       // arbritrary value signals that next 2 values will be steer and speed 011001000100110
+#define COMMAND_END 3416          // arbritrary value signals that data ended                            000110101011000
+
+/*
+// For Arduino, use code below. Don't forget to set baud rate to CONTROL_BAUD
+// Also copy and paste uint16_t COMMAND_START and COMMAND_END
+uint16_t COMMAND_START  57351
+uint16_t COMMAND_END    8184
+void setup(){Serial.begin(CONTROL_BAUD);}
+void loop() { uint16_t steer = 100; uint16_t speed = 200; sendCommand(steer, speed); }
+void sendCommand(uint16_t _steer, uint16_t _speed){
+    static uint16_t cmd_start = COMMAND_START; static uint16_t cmd_rnd = 0;
+    cmd_rnd = 1000 + (cmd_rnd % 200); // Generate different value
+    ++cmd_rnd;
+    for (int i = 0; i < 2; ++i){
+        Serial.write((uint8_t *) &cmd_start, sizeof(cmd_start));
+        Serial.write((uint8_t *) &_steer, sizeof(_steer));
+        Serial.write((uint8_t *) &_speed, sizeof(_speed));
+        Serial.write((uint8_t *) &cmd_rnd, sizeof(cmd_rnd));}}
+*/
 
 // ###### CONTROL VIA RC REMOTE ######
 // left sensor board cable. Channel 1: steering, Channel 2: speed. Use a very short cable!
@@ -76,8 +96,8 @@
 
 // ###### MOTOR TEST MODE ######
 // slowly move both wheels forward and backward, ignoring all inputs
-#define CONTROL_MOTOR_TEST
-#define CONTROL_MOTOR_TEST_MAX_SPEED 300         // sweep slowly from -MAX_SPEED to MAX_SPEED (0 - 1000)
+// #define CONTROL_MOTOR_TEST
+// #define CONTROL_MOTOR_TEST_MAX_SPEED 300         // sweep slowly from -MAX_SPEED to MAX_SPEED (0 - 1000)
 
 // ############################### DRIVING BEHAVIOR ###############################
 
@@ -89,12 +109,12 @@
 // - speedR and speedL: normal driving -1000 to 1000
 // - weakr and weakl: field weakening for extra boost at high speed (speedR > 700 and speedL > 700). 0 to ~400
 
-#define FILTER              0.1  // lower value == softer filter. do not use values <0.01, you will get float precision issues.
-#define SPEED_COEFFICIENT   0.5  // higher value == stronger. 0.0 to ~2.0?
-#define STEER_COEFFICIENT   0.5  // higher value == stronger. if you do not want any steering, set it to 0.0; 0.0 to 1.0
+#define FILTER              0.05  // lower value == softer filter. do not use values <0.01, you will get float precision issues.
+#define SPEED_COEFFICIENT   1.0  // higher value == stronger. 0.0 to ~2.0?
+#define STEER_COEFFICIENT   1.0  // higher value == stronger. if you do not want any steering, set it to 0.0; 0.0 to 1.0
 #define INVERT_R_DIRECTION
 #define INVERT_L_DIRECTION
-#define BEEPS_BACKWARD 1    // 0 or 1
+#define BEEPS_BACKWARD 0    // 0 or 1
 
 //Turbo boost at high speeds while button1 is pressed:
 //#define ADDITIONAL_CODE \

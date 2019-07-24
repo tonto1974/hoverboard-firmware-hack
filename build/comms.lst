@@ -1,0 +1,305 @@
+ARM GAS  /tmp/ccMNgxcy.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"comms.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.setScopeChannel,"ax",%progbits
+  16              		.align	1
+  17              		.global	setScopeChannel
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	setScopeChannel:
+  24              	.LFB66:
+  25              		.file 1 "Src/comms.c"
+   1:Src/comms.c   **** #include "stm32f1xx_hal.h"
+   2:Src/comms.c   **** #include "defines.h"
+   3:Src/comms.c   **** #include "setup.h"
+   4:Src/comms.c   **** #include "config.h"
+   5:Src/comms.c   **** #include "stdio.h"
+   6:Src/comms.c   **** #include "string.h"
+   7:Src/comms.c   **** 
+   8:Src/comms.c   **** UART_HandleTypeDef huart2;
+   9:Src/comms.c   **** 
+  10:Src/comms.c   **** #ifdef DEBUG_SERIAL_USART3
+  11:Src/comms.c   **** #define UART_DMA_CHANNEL DMA1_Channel2
+  12:Src/comms.c   **** #endif
+  13:Src/comms.c   **** 
+  14:Src/comms.c   **** #ifdef DEBUG_SERIAL_USART2
+  15:Src/comms.c   **** #define UART_DMA_CHANNEL DMA1_Channel7
+  16:Src/comms.c   **** #endif
+  17:Src/comms.c   **** 
+  18:Src/comms.c   **** 
+  19:Src/comms.c   **** volatile uint8_t uart_buf[100];
+  20:Src/comms.c   **** volatile int16_t ch_buf[8];
+  21:Src/comms.c   **** //volatile char char_buf[300];
+  22:Src/comms.c   **** 
+  23:Src/comms.c   **** void setScopeChannel(uint8_t ch, int16_t val) {
+  26              		.loc 1 23 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31              	.LVL0:
+  24:Src/comms.c   ****   ch_buf[ch] = val;
+  32              		.loc 1 24 0
+  33 0000 014B     		ldr	r3, .L2
+  34 0002 23F81010 		strh	r1, [r3, r0, lsl #1]	@ movhi
+ARM GAS  /tmp/ccMNgxcy.s 			page 2
+
+
+  25:Src/comms.c   **** }
+  35              		.loc 1 25 0
+  36 0006 7047     		bx	lr
+  37              	.L3:
+  38              		.align	2
+  39              	.L2:
+  40 0008 00000000 		.word	ch_buf
+  41              		.cfi_endproc
+  42              	.LFE66:
+  44              		.section	.text.consoleScope,"ax",%progbits
+  45              		.align	1
+  46              		.global	consoleScope
+  47              		.syntax unified
+  48              		.thumb
+  49              		.thumb_func
+  50              		.fpu softvfp
+  52              	consoleScope:
+  53              	.LFB67:
+  26:Src/comms.c   **** 
+  27:Src/comms.c   **** void consoleScope() {
+  54              		.loc 1 27 0
+  55              		.cfi_startproc
+  56              		@ args = 0, pretend = 0, frame = 0
+  57              		@ frame_needed = 0, uses_anonymous_args = 0
+  58 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+  59              	.LCFI0:
+  60              		.cfi_def_cfa_offset 20
+  61              		.cfi_offset 4, -20
+  62              		.cfi_offset 5, -16
+  63              		.cfi_offset 6, -12
+  64              		.cfi_offset 7, -8
+  65              		.cfi_offset 14, -4
+  66 0002 87B0     		sub	sp, sp, #28
+  67              	.LCFI1:
+  68              		.cfi_def_cfa_offset 48
+  28:Src/comms.c   ****   #if defined DEBUG_SERIAL_SERVOTERM && (defined DEBUG_SERIAL_USART2 || defined DEBUG_SERIAL_USART3
+  29:Src/comms.c   ****     uart_buf[0] = 0xff;
+  30:Src/comms.c   ****     uart_buf[1] = CLAMP(ch_buf[0]+127, 0, 255);
+  31:Src/comms.c   ****     uart_buf[2] = CLAMP(ch_buf[1]+127, 0, 255);
+  32:Src/comms.c   ****     uart_buf[3] = CLAMP(ch_buf[2]+127, 0, 255);
+  33:Src/comms.c   ****     uart_buf[4] = CLAMP(ch_buf[3]+127, 0, 255);
+  34:Src/comms.c   ****     uart_buf[5] = CLAMP(ch_buf[4]+127, 0, 255);
+  35:Src/comms.c   ****     uart_buf[6] = CLAMP(ch_buf[5]+127, 0, 255);
+  36:Src/comms.c   ****     uart_buf[7] = CLAMP(ch_buf[6]+127, 0, 255);
+  37:Src/comms.c   ****     uart_buf[8] = CLAMP(ch_buf[7]+127, 0, 255);
+  38:Src/comms.c   ****     uart_buf[9] = '\n';
+  39:Src/comms.c   **** 
+  40:Src/comms.c   ****     if(UART_DMA_CHANNEL->CNDTR == 0) {
+  41:Src/comms.c   ****       UART_DMA_CHANNEL->CCR &= ~DMA_CCR_EN;
+  42:Src/comms.c   ****       UART_DMA_CHANNEL->CNDTR = 10;
+  43:Src/comms.c   ****       UART_DMA_CHANNEL->CMAR  = (uint32_t)uart_buf;
+  44:Src/comms.c   ****       UART_DMA_CHANNEL->CCR |= DMA_CCR_EN;
+  45:Src/comms.c   ****     }
+  46:Src/comms.c   ****   #endif
+  47:Src/comms.c   **** 
+  48:Src/comms.c   ****   #if defined DEBUG_SERIAL_ASCII && (defined DEBUG_SERIAL_USART2 || defined DEBUG_SERIAL_USART3)
+  49:Src/comms.c   ****     memset(uart_buf, 0, sizeof(uart_buf));
+ARM GAS  /tmp/ccMNgxcy.s 			page 3
+
+
+  69              		.loc 1 49 0
+  70 0004 1A4F     		ldr	r7, .L7
+  71 0006 6422     		movs	r2, #100
+  72 0008 0021     		movs	r1, #0
+  73 000a 3846     		mov	r0, r7
+  74 000c FFF7FEFF 		bl	memset
+  75              	.LVL1:
+  50:Src/comms.c   ****     sprintf(uart_buf, "1:%6i 2:%5i 3:%5i 4:%5i 5:%5i 6:%5i 7:%5i 8:%5i\r\n", ch_buf[0], ch_buf[1], 
+  76              		.loc 1 50 0
+  77 0010 1849     		ldr	r1, .L7+4
+  78 0012 0A88     		ldrh	r2, [r1]
+  79 0014 B1F802C0 		ldrh	ip, [r1, #2]
+  80 0018 8888     		ldrh	r0, [r1, #4]
+  81 001a 00B2     		sxth	r0, r0
+  82 001c CC88     		ldrh	r4, [r1, #6]
+  83 001e 24B2     		sxth	r4, r4
+  84 0020 0D89     		ldrh	r5, [r1, #8]
+  85 0022 2DB2     		sxth	r5, r5
+  86 0024 4E89     		ldrh	r6, [r1, #10]
+  87 0026 36B2     		sxth	r6, r6
+  88 0028 8B89     		ldrh	r3, [r1, #12]
+  89 002a 1BB2     		sxth	r3, r3
+  90 002c C989     		ldrh	r1, [r1, #14]
+  91 002e 09B2     		sxth	r1, r1
+  92 0030 0591     		str	r1, [sp, #20]
+  93 0032 0493     		str	r3, [sp, #16]
+  94 0034 0396     		str	r6, [sp, #12]
+  95 0036 0295     		str	r5, [sp, #8]
+  96 0038 0194     		str	r4, [sp, #4]
+  97 003a 0090     		str	r0, [sp]
+  98 003c 0FFA8CF3 		sxth	r3, ip
+  99 0040 12B2     		sxth	r2, r2
+ 100 0042 0D49     		ldr	r1, .L7+8
+ 101 0044 3846     		mov	r0, r7
+ 102 0046 FFF7FEFF 		bl	sprintf
+ 103              	.LVL2:
+  51:Src/comms.c   **** 
+  52:Src/comms.c   ****     if(UART_DMA_CHANNEL->CNDTR == 0) {
+ 104              		.loc 1 52 0
+ 105 004a 0C4B     		ldr	r3, .L7+12
+ 106 004c 5B68     		ldr	r3, [r3, #4]
+ 107 004e 6BB9     		cbnz	r3, .L4
+  53:Src/comms.c   ****       UART_DMA_CHANNEL->CCR &= ~DMA_CCR_EN;
+ 108              		.loc 1 53 0
+ 109 0050 0A4C     		ldr	r4, .L7+12
+ 110 0052 2368     		ldr	r3, [r4]
+ 111 0054 23F00103 		bic	r3, r3, #1
+ 112 0058 2360     		str	r3, [r4]
+  54:Src/comms.c   ****       UART_DMA_CHANNEL->CNDTR = strlen(uart_buf);
+ 113              		.loc 1 54 0
+ 114 005a 3846     		mov	r0, r7
+ 115 005c FFF7FEFF 		bl	strlen
+ 116              	.LVL3:
+ 117 0060 6060     		str	r0, [r4, #4]
+  55:Src/comms.c   ****       UART_DMA_CHANNEL->CMAR  = (uint32_t)uart_buf;
+ 118              		.loc 1 55 0
+ 119 0062 E760     		str	r7, [r4, #12]
+ARM GAS  /tmp/ccMNgxcy.s 			page 4
+
+
+  56:Src/comms.c   ****       UART_DMA_CHANNEL->CCR |= DMA_CCR_EN;
+ 120              		.loc 1 56 0
+ 121 0064 2368     		ldr	r3, [r4]
+ 122 0066 43F00103 		orr	r3, r3, #1
+ 123 006a 2360     		str	r3, [r4]
+ 124              	.L4:
+  57:Src/comms.c   ****     }
+  58:Src/comms.c   ****   #endif
+  59:Src/comms.c   **** }
+ 125              		.loc 1 59 0
+ 126 006c 07B0     		add	sp, sp, #28
+ 127              	.LCFI2:
+ 128              		.cfi_def_cfa_offset 20
+ 129              		@ sp needed
+ 130 006e F0BD     		pop	{r4, r5, r6, r7, pc}
+ 131              	.L8:
+ 132              		.align	2
+ 133              	.L7:
+ 134 0070 00000000 		.word	uart_buf
+ 135 0074 00000000 		.word	ch_buf
+ 136 0078 00000000 		.word	.LC0
+ 137 007c 1C000240 		.word	1073872924
+ 138              		.cfi_endproc
+ 139              	.LFE67:
+ 141              		.section	.text.consoleLog,"ax",%progbits
+ 142              		.align	1
+ 143              		.global	consoleLog
+ 144              		.syntax unified
+ 145              		.thumb
+ 146              		.thumb_func
+ 147              		.fpu softvfp
+ 149              	consoleLog:
+ 150              	.LFB68:
+  60:Src/comms.c   **** 
+  61:Src/comms.c   **** void consoleLog(char *message)
+  62:Src/comms.c   **** {
+ 151              		.loc 1 62 0
+ 152              		.cfi_startproc
+ 153              		@ args = 0, pretend = 0, frame = 0
+ 154              		@ frame_needed = 0, uses_anonymous_args = 0
+ 155              	.LVL4:
+ 156 0000 10B5     		push	{r4, lr}
+ 157              	.LCFI3:
+ 158              		.cfi_def_cfa_offset 8
+ 159              		.cfi_offset 4, -8
+ 160              		.cfi_offset 14, -4
+ 161 0002 0446     		mov	r4, r0
+  63:Src/comms.c   ****     HAL_UART_Transmit_DMA(&huart2, (uint8_t *)message, strlen(message));
+ 162              		.loc 1 63 0
+ 163 0004 FFF7FEFF 		bl	strlen
+ 164              	.LVL5:
+ 165 0008 82B2     		uxth	r2, r0
+ 166 000a 2146     		mov	r1, r4
+ 167 000c 0148     		ldr	r0, .L11
+ 168 000e FFF7FEFF 		bl	HAL_UART_Transmit_DMA
+ 169              	.LVL6:
+  64:Src/comms.c   **** }
+ARM GAS  /tmp/ccMNgxcy.s 			page 5
+
+
+ 170              		.loc 1 64 0
+ 171 0012 10BD     		pop	{r4, pc}
+ 172              	.LVL7:
+ 173              	.L12:
+ 174              		.align	2
+ 175              	.L11:
+ 176 0014 00000000 		.word	huart2
+ 177              		.cfi_endproc
+ 178              	.LFE68:
+ 180              		.comm	ch_buf,16,4
+ 181              		.comm	uart_buf,100,4
+ 182              		.comm	huart2,64,4
+ 183              		.section	.rodata.consoleScope.str1.4,"aMS",%progbits,1
+ 184              		.align	2
+ 185              	.LC0:
+ 186 0000 313A2536 		.ascii	"1:%6i 2:%5i 3:%5i 4:%5i 5:%5i 6:%5i 7:%5i 8:%5i\015"
+ 186      6920323A 
+ 186      25356920 
+ 186      333A2535 
+ 186      6920343A 
+ 187 0030 0A00     		.ascii	"\012\000"
+ 188              		.text
+ 189              	.Letext0:
+ 190              		.file 2 "/usr/arm-none-eabi/include/machine/_default_types.h"
+ 191              		.file 3 "/usr/arm-none-eabi/include/sys/_stdint.h"
+ 192              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 193              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 194              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 195              		.file 7 "/usr/arm-none-eabi/include/sys/lock.h"
+ 196              		.file 8 "/usr/arm-none-eabi/include/sys/_types.h"
+ 197              		.file 9 "/usr/lib/gcc/arm-none-eabi/7.3.1/include/stddef.h"
+ 198              		.file 10 "/usr/arm-none-eabi/include/sys/reent.h"
+ 199              		.file 11 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 200              		.file 12 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 201              		.file 13 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 202              		.file 14 "/usr/arm-none-eabi/include/string.h"
+ 203              		.file 15 "/usr/arm-none-eabi/include/stdio.h"
+ 204              		.file 16 "<built-in>"
+ARM GAS  /tmp/ccMNgxcy.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 comms.c
+     /tmp/ccMNgxcy.s:16     .text.setScopeChannel:0000000000000000 $t
+     /tmp/ccMNgxcy.s:23     .text.setScopeChannel:0000000000000000 setScopeChannel
+     /tmp/ccMNgxcy.s:40     .text.setScopeChannel:0000000000000008 $d
+                            *COM*:0000000000000010 ch_buf
+     /tmp/ccMNgxcy.s:45     .text.consoleScope:0000000000000000 $t
+     /tmp/ccMNgxcy.s:52     .text.consoleScope:0000000000000000 consoleScope
+     /tmp/ccMNgxcy.s:134    .text.consoleScope:0000000000000070 $d
+                            *COM*:0000000000000064 uart_buf
+     /tmp/ccMNgxcy.s:142    .text.consoleLog:0000000000000000 $t
+     /tmp/ccMNgxcy.s:149    .text.consoleLog:0000000000000000 consoleLog
+     /tmp/ccMNgxcy.s:176    .text.consoleLog:0000000000000014 $d
+                            *COM*:0000000000000040 huart2
+     /tmp/ccMNgxcy.s:184    .rodata.consoleScope.str1.4:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+memset
+sprintf
+strlen
+HAL_UART_Transmit_DMA
